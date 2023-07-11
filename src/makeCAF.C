@@ -20,6 +20,7 @@
 #include "reco/MLNDLArRecoBranchFiller.h"
 #include "reco/TMSRecoBranchFiller.h"
 #include "reco/NDLArTMSMatchRecoFiller.h"
+#include "reco/MINERvARecoBranchFiller.h"
 #include "reco/SANDRecoBranchFiller.h"
 #include "truth/FillTruth.h"
 
@@ -122,6 +123,11 @@ std::vector<std::unique_ptr<cafmaker::IRecoBranchFiller>> getRecoFillers(const c
   if (par().cafmaker().tmsRecoFile(tmsFile))
     recoFillers.emplace_back(std::make_unique<cafmaker::TMSRecoBranchFiller>(tmsFile));
 
+  // next: did we do the MINERvA reco?
+  std::string minervaFile;
+  if (par().cafmaker().minervaRecoFile(minervaFile))
+    recoFillers.emplace_back(std::make_unique<cafmaker::MINERvARecoBranchFiller>(tmsFile))
+
   // if we did both ND-LAr and TMS, we should try to match them, too
   if (!ndlarFile.empty() && !tmsFile.empty())
     recoFillers.emplace_back(std::make_unique<cafmaker::NDLArTMSMatchRecoFiller>());
@@ -146,8 +152,7 @@ void loop(CAF& caf,
   int start = par().cafmaker().first();
   for( int ii = start; ii < start + N; ++ii ) {
 
-    if( ii % 100 == 0 )
-      printf( "Event %d (%d of %d)...\n", ii, (ii-start)+1, N );
+    if( ii % 100 == 0 ) printf( "Event %d (%d of %d)...\n", ii, ii-start, N );
 
     // reset (the default constructor initializes its variables)
     caf.setToBS();

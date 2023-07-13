@@ -3,8 +3,8 @@
 /// \author  N.Roy <noeroy@yorku.ca>
 /// \date    Nov. 2022
 
-#ifndef ND_CAFMAKER_MINERvABranchFiller_H
-#define ND_CAFMAKER_MINERvABranchFiller_H
+#ifndef ND_CAFMAKER_MINERvARecoBranchFiller_H
+#define ND_CAFMAKER_MINERvARecoBranchFiller_H
 
 #include <iostream>
 
@@ -21,11 +21,11 @@
 
 namespace cafmaker
 {
-  class MINERvABranchFiller : public cafmaker::IRecoBranchFiller
+  class MINERvARecoBranchFiller : public cafmaker::IRecoBranchFiller
   {
     public:
-      MINERvABranchFiller(const std::string & minervaRecoFilename);
-      ~MINERvABranchFiller() {
+      MINERvARecoBranchFiller(const std::string & minervaRecoFilename);
+      ~MINERvARecoBranchFiller() {
         delete MnvRecoTree;
         fMnvRecoFile->Close();
         delete fMnvRecoFile;
@@ -63,4 +63,4 @@ namespace cafmaker
   };
 
 }
-#endif //ND_CAFMAKER_MINERvABranchFiller_H
+#endif //ND_CAFMAKER_MINERvARecoBranchFiller_H

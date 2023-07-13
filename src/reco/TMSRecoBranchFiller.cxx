@@ -46,7 +46,7 @@ namespace cafmaker
   {
     // Get nth entry from tree
     TMSRecoTree->GetEntry(evtIdx);
-
+/*
     // First set number of tracks
     sr.nd.tms.ntracks = _nLines;
     sr.nd.tms.tracks.resize(_nLines);
@@ -81,6 +81,6 @@ namespace cafmaker
       sr.nd.tms.tracks[i].dir     = caf::SRVector3D(_DirectionX_Upstream[i], -999, _DirectionZ_Upstream[i]);
       sr.nd.tms.tracks[i].enddir  = caf::SRVector3D(_DirectionX_Downstream[i], -999, _DirectionZ_Downstream[i]);
     }
-
+*/
   }
 } // end namespace

@@ -14,7 +14,7 @@ namespace cafmaker
                                                   const cafmaker::Params &par) const
   {
     // match tracks using the info that should have been filled by the ND-LAr and TMS reco fillers
-    unsigned int n_TMS_tracks = sr.nd.tms.ntracks;  //# tracks in TMS in evtIdx
+   /* unsigned int n_TMS_tracks = sr.nd.tms.ntracks;  //# tracks in TMS in evtIdx
     unsigned int n_LAr_tracks = sr.nd.lar.ntracks;  //# tracks in LAr in evtIdx
 
     sr.nd.ntrkmatch = 0;
@@ -74,6 +74,6 @@ namespace cafmaker
           // Should pick the best track match in selection code
         }
       }
-    }
+    }*/
   }
 }

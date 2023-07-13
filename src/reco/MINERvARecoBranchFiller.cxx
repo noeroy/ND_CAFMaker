@@ -54,6 +54,9 @@ namespace cafmaker
     // Get nth entry from tree
     MnvRecoTree->GetEntry(evtIdx);
 
+    double offset_z = 654.8649999999999636; //Minerva ref point not centered on 0
+    double offset_y = - 43.0; //Minerva ref point not centered on 0
+
     
 
     std::map<int,std::vector<caf::SRTrack>> track_map;
@@ -68,8 +71,8 @@ namespace cafmaker
 
       // Save first and last hit in track
       // MINERvA Reco info is saved in mm whereas CAFs use CM as default -> do conversion here
-      my_track.start = caf::SRVector3D(trk_node_X[i][0]/10.,trk_node_Y[i][0]/10., trk_node_Z[i][0]/10.);
-      my_track.end   = caf::SRVector3D(trk_node_X[i][n_tracks-1]/10.,trk_node_Y[i][n_tracks-1]/10., trk_node_Z[i][n_tracks-1]/10.);
+      my_track.start = caf::SRVector3D(trk_node_X[i][0]/10.,trk_node_Y[i][0]/10. - offset_y, trk_node_Z[i][0]/10. + offset_z);
+      my_track.end   = caf::SRVector3D(trk_node_X[i][n_tracks-1]/10.,trk_node_Y[i][n_tracks-1]/10. - offset_y, trk_node_Z[i][n_tracks-1]/10. + offset_z);
 
       // Track info
       my_track.len_cm  = sqrt(pow(trk_node_X[i][n_tracks-1] - trk_node_X[i][0],2)+pow(trk_node_Y[i][n_tracks-1] - trk_node_Y[i][0],2)+pow(trk_node_Z[i][n_tracks-1] - trk_node_Z[i][0],2))/10.;

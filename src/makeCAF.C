@@ -23,6 +23,8 @@
 #include "reco/MINERvARecoBranchFiller.h"
 #include "reco/SANDRecoBranchFiller.h"
 #include "truth/FillTruth.h"
+#include "duneanaobj/StandardRecord/SREnums.h"
+
 
 namespace progopt = boost::program_options;
 
@@ -126,7 +128,7 @@ std::vector<std::unique_ptr<cafmaker::IRecoBranchFiller>> getRecoFillers(const c
   // next: did we do the MINERvA reco?
   std::string minervaFile;
   if (par().cafmaker().minervaRecoFile(minervaFile))
-    recoFillers.emplace_back(std::make_unique<cafmaker::MINERvARecoBranchFiller>(tmsFile))
+    recoFillers.emplace_back(std::make_unique<cafmaker::MINERvARecoBranchFiller>(minervaFile)); 
 
   // if we did both ND-LAr and TMS, we should try to match them, too
   if (!ndlarFile.empty() && !tmsFile.empty())
@@ -155,16 +157,16 @@ void loop(CAF& caf,
     if( ii % 100 == 0 ) printf( "Event %d (%d of %d)...\n", ii, ii-start, N );
 
     // reset (the default constructor initializes its variables)
-    caf.setToBS();
+    // caf.setToBS();
 
-    caf.sr.run = par().runInfo().run();
-    caf.sr.subrun = par().runInfo().subrun();
-    caf.sr.meta_run = par().runInfo().run();
-    caf.sr.meta_subrun = par().runInfo().subrun();
-    caf.sr.event = ii;
-    caf.sr.isFD = 0;
-    caf.sr.isFHC = par().runInfo().fhc();
-    caf.sr.pot = caf.pot;
+    // caf.sr.run = par().runInfo().run();
+    // caf.sr.subrun = par().runInfo().subrun();
+    // caf.sr.meta_run = par().runInfo().run();
+    // caf.sr.meta_subrun = par().runInfo().subrun();
+    // caf.sr.event = ii;
+    // caf.sr.isFD = 0;
+    // caf.sr.isFHC = par().runInfo().fhc();
+    caf.sr.beam.pulsepot = caf.pot;
 
     // in the future this can be extended to use 'truth fillers'
     // (like the reco ones) if we find that the truth filling
@@ -176,6 +178,8 @@ void loop(CAF& caf,
       filler->FillRecoBranches(ii, caf.sr, par);
 
     caf.fill();
+
+    std::cout<<"NOE ntracks: "<<caf.sr.nd.minerva.ixn[0].tracks[0].Evis<<std::endl;
   }
 
   // set other metadata

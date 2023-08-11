@@ -15,6 +15,7 @@ namespace cafmaker
 
         throw;
       }
+      //tracks branches 
       MnvRecoTree->SetBranchAddress("n_tracks", &n_tracks);
       MnvRecoTree->SetBranchAddress("trk_index", trk_index);
       MnvRecoTree->SetBranchAddress("trk_type", trk_type);
@@ -35,6 +36,45 @@ namespace cafmaker
       MnvRecoTree->SetBranchAddress("trk_node_aY", trk_node_aY);
       MnvRecoTree->SetBranchAddress("trk_node_qOverP", trk_node_qOverP);
       MnvRecoTree->SetBranchAddress("trk_node_chi2", trk_node_chi2);
+
+      //Shower branches
+      fChain->SetBranchAddress("n_blobs_id", &n_blobs_id);
+      fChain->SetBranchAddress("blob_id_idx", blob_id_idx);
+      fChain->SetBranchAddress("blob_id_subdet", blob_id_subdet);
+      fChain->SetBranchAddress("blob_id_history", blob_id_history);
+      fChain->SetBranchAddress("blob_id_size", blob_id_size);
+      fChain->SetBranchAddress("blob_id_patrec", blob_id_patrec);
+      fChain->SetBranchAddress("blob_id_e", blob_id_e);
+      fChain->SetBranchAddress("blob_id_time", blob_id_time);
+      fChain->SetBranchAddress("blob_id_time_slice", blob_id_time_slice);
+      fChain->SetBranchAddress("blob_id_startpoint_x", blob_id_startpoint_x);
+      fChain->SetBranchAddress("blob_id_startpoint_y", blob_id_startpoint_y);
+      fChain->SetBranchAddress("blob_id_startpoint_z", blob_id_startpoint_z);
+      fChain->SetBranchAddress("blob_id_clus_idx", blob_id_clus_idx);
+
+
+      //Truth branches
+      fChain->SetBranchAddress("mc_traj_trkid", mc_traj_trkid);
+      fChain->SetBranchAddress("mc_traj_parentid", mc_traj_parentid);
+      fChain->SetBranchAddress("mc_traj_pdg", mc_traj_pdg);
+      fChain->SetBranchAddress("mc_traj_hit_e", mc_traj_hit_e);
+      fChain->SetBranchAddress("mc_traj_npoints", mc_traj_npoints);
+      fChain->SetBranchAddress("mc_traj_point_x", mc_traj_point_x);
+      fChain->SetBranchAddress("mc_traj_point_y", mc_traj_point_y);
+      fChain->SetBranchAddress("mc_traj_point_z", mc_traj_point_z);
+      fChain->SetBranchAddress("mc_traj_point_t", mc_traj_point_t);
+      fChain->SetBranchAddress("mc_traj_point_px", mc_traj_point_px);
+      fChain->SetBranchAddress("mc_traj_point_py", mc_traj_point_py);
+      fChain->SetBranchAddress("mc_traj_point_pz", mc_traj_point_pz);
+      fChain->SetBranchAddress("mc_traj_point_E", mc_traj_point_E);
+
+      //Truth Matching variables
+      fChain->SetBranchAddress("clus_id_size", clus_id_size);
+      fChain->SetBranchAddress("clus_id_hits_idx", clus_id_hits_idx);
+      fChain->SetBranchAddress("mc_id_mchit_trkid", mc_id_mchit_trkid);
+      fChain->SetBranchAddress("mc_id_mchit_dE", mc_id_mchit_dE);
+
+
     } else {
       fMnvRecoFile = NULL;
       MnvRecoTree = NULL;
@@ -54,16 +94,40 @@ namespace cafmaker
     // Get nth entry from tree
     MnvRecoTree->GetEntry(evtIdx);
 
+    //TODO: This is hardcoded for now, need to find a way to pass it through via MINERvA file 
     double offset_z = 654.8649999999999636; //Minerva ref point not centered on 0
     double offset_y = - 43.0; //Minerva ref point not centered on 0
+    
+
+    int max_slice = 0;
+    // Fill in the track info 
+    std::map<int,std::vector<caf::SRTrack>> track_map = fill_track(max_slice);
+    std::map<int,std::vector<caf::SRTrack>> track_shower = fill_shower(max_slice);
 
     
 
+    for (int i_slice = 0; i_slice < max_slice; i_slice++)
+    {
+      if (track_map[i_slice].size() == 0 && shower_map[i_slice].size() == 0) continue;
+      caf::SRMINERvAInt my_int;
+
+      my_int.ntracks = track_map[i_slice].size();
+      my_int.nshowers = shower_map[i_slice].size();
+
+      for (std::size_t i_track = 0; i_track < track_map[i_slice].size(); i_track ++) my_int.tracks.push_back(std::move(track_map[i_slice][i_track]));
+
+      for (std::size_t i_shower = 0; i_shower < shower_map[i_slice].size(); i_shower ++) my_int.showers.push_back(std::move(shower_map[i_slice][i_shower]));
+      
+      sr.nd.minerva.ixn.push_back(my_int);
+      sr.nd.minerva.nixn +=1;
+    }
+
+  }
+
+  std::map<int, std::vector<caf::SRShower>> MINERvARecoBranchFiller::fill_track(int & max_slice)
+  {
     std::map<int,std::vector<caf::SRTrack>> track_map;
 
-    std::cout<<"NOE "<<evtIdx<<std::endl;
-
-    // Fill in the track info 
     for (int i = 0; i < n_tracks; ++i) {
 
       int my_slice = trk_time_slice[i];
@@ -84,23 +148,133 @@ namespace cafmaker
       my_track.enddir  = caf::SRVector3D(sin(trk_theta[i])*cos(trk_phi[i]),sin(trk_theta[i])*sin(trk_phi[i]),cos(trk_theta[i]));
 
       //Fill the track map
+
+      find_truth_track(my_track,i);
       track_map[my_slice].push_back(my_track);
+      if (max_slice < my_slice) max_slice = my_slice;
     }
-
-    for (auto & slice : track_map) {
-      caf::SRMINERvAInt my_int;
-      
-      // First set number of tracks
-      my_int.ntracks = slice.second.size();
-
-      for (std::size_t i_track = 0; i_track<slice.second.size(); i_track++){
-        my_int.tracks.push_back(std::move(slice.second[i_track]));
-      }
-      sr.nd.minerva.ixn.push_back(my_int);
-      sr.nd.minerva.nixn +=1;
-      
-      
-    }
-
+    return track_map;
   }
+
+  std::map<int,std::vector<caf::SRShower>> MINERvARecoBranchFiller::fill_shower(int & max_slice)
+  {
+    std::map<int,std::vector<caf::SRShower>> shower_map;
+
+    for (int i = 0; i < n_blob_id; ++i) {
+
+      int my_slice = blob_id_time_slice[i];
+      caf::SRShower my_shower;
+
+      // Save first and last hit in track
+      // MINERvA Reco info is saved in mm whereas CAFs use CM as default -> do conversion here
+      my_shower.start = caf::SRVector3D(blob_id_startpoint_x[i]/10.,blob_id_startpoint_y[i][0]/10. - offset_y, blob_id_startpoint_z[i][0]/10. + offset_z);
+      
+      double x_dir = (blob_id_centroid_x[i] - blob_id_startpoint_x[i]);
+      double y_dir = (blob_id_centroid_y[i] - blob_id_startpoint_y[i]);
+      double z_dir = (blob_id_centroid_z[i] - blob_id_startpoint_z[i]);
+      double norm_dir = sqrt(x*x+y*y+z*z);
+      x_dir /= norm_dir;
+      y_dir /= norm_dir;
+      z_dir /= norm_dir;
+
+      my_shower.direction = caf::SRVector3D(x_dir, y_dir, z_dir);
+
+      my_shower.Evis = blob_id_e[i];
+
+      find_truth_shower(my_shower,i);
+      //Fill the shower map
+      shower_map[my_slice].push_back(my_shower);
+      if (max_slice < my_slice) max_slice = my_slice;
+    }
+
+    return shower_map;
+  }
+
+  void MINERvARecoBranchFiller::find_truth_shower(& caf::SRShower sh, int shower_id)
+  {
+    std::map<int, double> most_ids;
+    for (int j = 0; j<blob_id_size[shower_id]; j++)
+    {
+        //Get the cluster associated to the node
+        int id_cl = blob_id_clus_idx[shower_id][j];
+        
+        //Get the # of digits (hits) in the cluster
+        int clus_size = clus_id_size[id_cl];
+
+        for (int k = 0; k<clus_size; k++)
+        {
+            int id_hit = clus_id_hits_idx[id_cl][0];
+            int traj_id = mc_id_mchit_trkid[id_hit][0]; // Get the true trajectory associated to the hit
+            if (mc_id_mchit_dE[id_hit][0] > 0) 
+            {
+              most_trkid[traj_id] += mc_id_mchit_dE[id_hit][0]; // Looks for trajectory that contributed the most to the track 
+            }
+        }          
+    }
+   
+    double max_trkid_stat = 0;
+    int max_trkid = 0;
+
+    for (auto & tkid : most_trkid) 
+    {
+        if (tkid.second > max_trkid_stat) {
+            max_trkid_stat = tkid.second;
+            max_trkid = tkid.first; 
+        }
+    }
+    t.truth.pdg = mc_traj_pdg[max_trkid];
+    t.truth.G4ID = max_trkid; 
+    t.truth.time = mc_traj_point_t[max_trkid][0];
+    t.truth.parent = mc_traj_parentid[max_trkid];
+    SRVector3D start_pos = SRVector3D(mc_traj_point_x[max_trkid][0],mc_traj_point_y[max_trkid][0],mc_traj_point_z[max_trkid][0])
+    SRVector3D end_pos = SRVector3D(mc_traj_point_x[max_trkid][1],mc_traj_point_y[max_trkid][1],mc_traj_point_z[max_trkid][1])
+
+    t.truth.start_pos = start_pos;
+    t.truth.end_pos = end_pos;
+  }
+
+  void MINERvARecoBranchFiller::find_truth_track(& caf::SRTrack t, int track_id)
+  {
+    std::map<int, double> most_ids;
+    for (int j = 0; j<trk_nodes[track_id]; j++)
+    {
+        //Get the cluster associated to the node
+        int id_cl = trk_node_cluster_idx[track_id][j];
+        
+        //Get the # of digits (hits) in the cluster
+        int clus_size = clus_id_size[id_cl];
+
+        for (int k = 0; k<clus_size; k++)
+        {
+            int id_hit = clus_id_hits_idx[id_cl][0];
+            int traj_id = mc_id_mchit_trkid[id_hit][0]; // Get the true trajectory associated to the hit
+            if (mc_id_mchit_dE[id_hit][0] > 0) 
+            {
+              most_trkid[traj_id] += mc_id_mchit_dE[id_hit][0]; // Looks for trajectory that contributed the most to the track 
+            }
+        }          
+    }
+   
+    double max_trkid_stat = 0;
+    int max_trkid = 0;
+
+    for (auto & tkid : most_trkid) 
+    {
+        if (tkid.second > max_trkid_stat) {
+            max_trkid_stat = tkid.second;
+            max_trkid = tkid.first; 
+        }
+    }
+    t.truth.pdg = mc_traj_pdg[max_trkid];
+    t.truth.G4ID = max_trkid; 
+    t.truth.time = mc_traj_point_t[max_trkid][0];
+    t.truth.parent = mc_traj_parentid[max_trkid];
+    SRVector3D start_pos = SRVector3D(mc_traj_point_x[max_trkid][0],mc_traj_point_y[max_trkid][0],mc_traj_point_z[max_trkid][0])
+    SRVector3D end_pos = SRVector3D(mc_traj_point_x[max_trkid][1],mc_traj_point_y[max_trkid][1],mc_traj_point_z[max_trkid][1])
+
+    t.truth.start_pos = start_pos;
+    t.truth.end_pos = end_pos;
+  }
+
+
 } // end namespace

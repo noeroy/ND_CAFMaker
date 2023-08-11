@@ -38,7 +38,7 @@ namespace cafmaker
                              caf::StandardRecord &sr,
                              const cafmaker::Params &par) const override;
 
-      std::map<int, std::vector<caf::SRShower>> fill_track(int & max_slice) const;
+      std::map<int, std::vector<caf::SRTrack>> fill_track(int & max_slice) const;
 
       std::map<int, std::vector<caf::SRShower>> fill_shower(int & max_slice) const;
 
@@ -48,6 +48,11 @@ namespace cafmaker
 
       TFile *fMnvRecoFile;
       TTree *MnvRecoTree;
+      
+
+      //coordinate offset
+      double offset_z; //Minerva ref point not centered on 0
+      double offset_y; //Minerva ref point not centered on 0
 
       //Tracks variables
       Int_t           n_tracks;

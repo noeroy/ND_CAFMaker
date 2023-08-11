@@ -82,6 +82,10 @@ namespace cafmaker
       std::cerr << "Are you sure it exists?" << std::endl;
       throw;
     }
+
+    //TODO: This is hardcoded for now, need to find a way to pass it through via MINERvA file 
+    offset_z = 654.8649999999999636; //Minerva ref point not centered on 0
+    offset_y = - 43.0; //Minerva ref point not centered on 0
   }
 
   // ---------------------------------------------------------------------------
@@ -92,17 +96,12 @@ namespace cafmaker
                                               const cafmaker::Params &par) const
   {
     // Get nth entry from tree
-    MnvRecoTree->GetEntry(evtIdx);
-
-    //TODO: This is hardcoded for now, need to find a way to pass it through via MINERvA file 
-    double offset_z = 654.8649999999999636; //Minerva ref point not centered on 0
-    double offset_y = - 43.0; //Minerva ref point not centered on 0
-    
+    MnvRecoTree->GetEntry(evtIdx);  
 
     int max_slice = 0;
     // Fill in the track info 
     std::map<int,std::vector<caf::SRTrack>> track_map = fill_track(max_slice);
-    std::map<int,std::vector<caf::SRTrack>> track_shower = fill_shower(max_slice);
+    std::map<int,std::vector<caf::SRShower>> shower_map = fill_shower(max_slice);
 
     
 
@@ -124,7 +123,7 @@ namespace cafmaker
 
   }
 
-  std::map<int, std::vector<caf::SRShower>> MINERvARecoBranchFiller::fill_track(int & max_slice)
+  std::map<int, std::vector<caf::SRTrack>> MINERvARecoBranchFiller::fill_track(int & max_slice)
   {
     std::map<int,std::vector<caf::SRTrack>> track_map;
 

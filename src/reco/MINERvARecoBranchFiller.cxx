@@ -38,41 +38,41 @@ namespace cafmaker
       MnvRecoTree->SetBranchAddress("trk_node_chi2", trk_node_chi2);
 
       //Shower branches
-      fChain->SetBranchAddress("n_blobs_id", &n_blobs_id);
-      fChain->SetBranchAddress("blob_id_idx", blob_id_idx);
-      fChain->SetBranchAddress("blob_id_subdet", blob_id_subdet);
-      fChain->SetBranchAddress("blob_id_history", blob_id_history);
-      fChain->SetBranchAddress("blob_id_size", blob_id_size);
-      fChain->SetBranchAddress("blob_id_patrec", blob_id_patrec);
-      fChain->SetBranchAddress("blob_id_e", blob_id_e);
-      fChain->SetBranchAddress("blob_id_time", blob_id_time);
-      fChain->SetBranchAddress("blob_id_time_slice", blob_id_time_slice);
-      fChain->SetBranchAddress("blob_id_startpoint_x", blob_id_startpoint_x);
-      fChain->SetBranchAddress("blob_id_startpoint_y", blob_id_startpoint_y);
-      fChain->SetBranchAddress("blob_id_startpoint_z", blob_id_startpoint_z);
-      fChain->SetBranchAddress("blob_id_clus_idx", blob_id_clus_idx);
+      MnvRecoTree->SetBranchAddress("n_blobs_id", &n_blobs_id);
+      MnvRecoTree->SetBranchAddress("blob_id_idx", blob_id_idx);
+      MnvRecoTree->SetBranchAddress("blob_id_subdet", blob_id_subdet);
+      MnvRecoTree->SetBranchAddress("blob_id_history", blob_id_history);
+      MnvRecoTree->SetBranchAddress("blob_id_size", blob_id_size);
+      MnvRecoTree->SetBranchAddress("blob_id_patrec", blob_id_patrec);
+      MnvRecoTree->SetBranchAddress("blob_id_e", blob_id_e);
+      MnvRecoTree->SetBranchAddress("blob_id_time", blob_id_time);
+      MnvRecoTree->SetBranchAddress("blob_id_time_slice", blob_id_time_slice);
+      MnvRecoTree->SetBranchAddress("blob_id_startpoint_x", blob_id_startpoint_x);
+      MnvRecoTree->SetBranchAddress("blob_id_startpoint_y", blob_id_startpoint_y);
+      MnvRecoTree->SetBranchAddress("blob_id_startpoint_z", blob_id_startpoint_z);
+      MnvRecoTree->SetBranchAddress("blob_id_clus_idx", blob_id_clus_idx);
 
 
       //Truth branches
-      fChain->SetBranchAddress("mc_traj_trkid", mc_traj_trkid);
-      fChain->SetBranchAddress("mc_traj_parentid", mc_traj_parentid);
-      fChain->SetBranchAddress("mc_traj_pdg", mc_traj_pdg);
-      fChain->SetBranchAddress("mc_traj_hit_e", mc_traj_hit_e);
-      fChain->SetBranchAddress("mc_traj_npoints", mc_traj_npoints);
-      fChain->SetBranchAddress("mc_traj_point_x", mc_traj_point_x);
-      fChain->SetBranchAddress("mc_traj_point_y", mc_traj_point_y);
-      fChain->SetBranchAddress("mc_traj_point_z", mc_traj_point_z);
-      fChain->SetBranchAddress("mc_traj_point_t", mc_traj_point_t);
-      fChain->SetBranchAddress("mc_traj_point_px", mc_traj_point_px);
-      fChain->SetBranchAddress("mc_traj_point_py", mc_traj_point_py);
-      fChain->SetBranchAddress("mc_traj_point_pz", mc_traj_point_pz);
-      fChain->SetBranchAddress("mc_traj_point_E", mc_traj_point_E);
+      MnvRecoTree->SetBranchAddress("mc_traj_trkid", mc_traj_trkid);
+      MnvRecoTree->SetBranchAddress("mc_traj_parentid", mc_traj_parentid);
+      MnvRecoTree->SetBranchAddress("mc_traj_pdg", mc_traj_pdg);
+      MnvRecoTree->SetBranchAddress("mc_traj_hit_e", mc_traj_hit_e);
+      MnvRecoTree->SetBranchAddress("mc_traj_npoints", mc_traj_npoints);
+      MnvRecoTree->SetBranchAddress("mc_traj_point_x", mc_traj_point_x);
+      MnvRecoTree->SetBranchAddress("mc_traj_point_y", mc_traj_point_y);
+      MnvRecoTree->SetBranchAddress("mc_traj_point_z", mc_traj_point_z);
+      MnvRecoTree->SetBranchAddress("mc_traj_point_t", mc_traj_point_t);
+      MnvRecoTree->SetBranchAddress("mc_traj_point_px", mc_traj_point_px);
+      MnvRecoTree->SetBranchAddress("mc_traj_point_py", mc_traj_point_py);
+      MnvRecoTree->SetBranchAddress("mc_traj_point_pz", mc_traj_point_pz);
+      MnvRecoTree->SetBranchAddress("mc_traj_point_E", mc_traj_point_E);
 
       //Truth Matching variables
-      fChain->SetBranchAddress("clus_id_size", clus_id_size);
-      fChain->SetBranchAddress("clus_id_hits_idx", clus_id_hits_idx);
-      fChain->SetBranchAddress("mc_id_mchit_trkid", mc_id_mchit_trkid);
-      fChain->SetBranchAddress("mc_id_mchit_dE", mc_id_mchit_dE);
+      MnvRecoTree->SetBranchAddress("clus_id_size", clus_id_size);
+      MnvRecoTree->SetBranchAddress("clus_id_hits_idx", clus_id_hits_idx);
+      MnvRecoTree->SetBranchAddress("mc_id_mchit_trkid", mc_id_mchit_trkid);
+      MnvRecoTree->SetBranchAddress("mc_id_mchit_dE", mc_id_mchit_dE);
 
 
     } else {
@@ -190,7 +190,7 @@ namespace cafmaker
     return shower_map;
   }
 
-  void MINERvARecoBranchFiller::find_truth_shower(& caf::SRShower sh, int shower_id)
+  void MINERvARecoBranchFiller::find_truth_shower(caf::SRShower &sh, int shower_id)
   {
     std::map<int, double> most_ids;
     for (int j = 0; j<blob_id_size[shower_id]; j++)
@@ -233,7 +233,7 @@ namespace cafmaker
     t.truth.end_pos = end_pos;
   }
 
-  void MINERvARecoBranchFiller::find_truth_track(& caf::SRTrack t, int track_id)
+  void MINERvARecoBranchFiller::find_truth_track(caf::SRTrack &t, int track_id)
   {
     std::map<int, double> most_ids;
     for (int j = 0; j<trk_nodes[track_id]; j++)

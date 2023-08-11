@@ -42,9 +42,9 @@ namespace cafmaker
 
       std::map<int, std::vector<caf::SRShower>> fill_shower(int & max_slice) const;
 
-      void find_truth_shower(& caf::SRShower sh, int shower_id) const;
+      void find_truth_shower(caf::SRShower & sh, int shower_id) const;
 
-      void find_truth_track(& caf::SRTrack t, int track_id) const;
+      void find_truth_track(caf::SRTrack & t, int track_id) const;
 
       TFile *fMnvRecoFile;
       TTree *MnvRecoTree;

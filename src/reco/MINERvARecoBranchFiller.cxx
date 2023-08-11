@@ -123,7 +123,7 @@ namespace cafmaker
 
   }
 
-  std::map<int, std::vector<caf::SRTrack>> MINERvARecoBranchFiller::fill_track(int & max_slice)
+  std::map<int, std::vector<caf::SRTrack>> MINERvARecoBranchFiller::fill_track(int & max_slice) const
   {
     std::map<int,std::vector<caf::SRTrack>> track_map;
 
@@ -155,7 +155,7 @@ namespace cafmaker
     return track_map;
   }
 
-  std::map<int,std::vector<caf::SRShower>> MINERvARecoBranchFiller::fill_shower(int & max_slice)
+  std::map<int,std::vector<caf::SRShower>> MINERvARecoBranchFiller::fill_shower(int & max_slice) const
   {
     std::map<int,std::vector<caf::SRShower>> shower_map;
 
@@ -189,7 +189,7 @@ namespace cafmaker
     return shower_map;
   }
 
-  void MINERvARecoBranchFiller::find_truth_shower(caf::SRShower &sh, int shower_id)
+  void MINERvARecoBranchFiller::find_truth_shower(caf::SRShower &sh, int shower_id) const
   {
     std::map<int, double> most_ids;
     for (int j = 0; j<blob_id_size[shower_id]; j++)
@@ -232,7 +232,7 @@ namespace cafmaker
     t.truth.end_pos = end_pos;
   }
 
-  void MINERvARecoBranchFiller::find_truth_track(caf::SRTrack &t, int track_id)
+  void MINERvARecoBranchFiller::find_truth_track(caf::SRTrack &t, int track_id) const
   {
     std::map<int, double> most_ids;
     for (int j = 0; j<trk_nodes[track_id]; j++)
